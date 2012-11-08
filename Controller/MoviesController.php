@@ -23,6 +23,27 @@ class MoviesController extends AppController
         return $this->api_key = Configure::read('api_key');
     }
     
+    public function index($search = null)
+    {
+
+    }
+    
+    public function titles($search = null)
+    {
+        if(!$search){ 
+            exit;
+        }
+        
+        $movies_arr = json_decode($this->_get_movies($search), true);
+        $movies = $movies_arr['movies'];
+        
+        $titles = array_map(function($movie){
+                return $movie['title'];
+            }, $movies);
+        echo json_encode($titles);
+        exit;
+    }
+    
     /**
      * Returns an array of movies based on search term
      * @param $search Search term for movie
@@ -30,18 +51,22 @@ class MoviesController extends AppController
     public function search($search = null)
     {   
         if(!$search){ 
-            $this->redirect('/');
+            $this->redirect('/movies');
         }
         
+        $movies_arr = json_decode($this->_get_movies($search), true);
+        $movies = $movies_arr['movies']; 
+        
+        $this->set(compact('movies')); 
+    }
+    
+    protected function _get_movies($search = null)
+    {
         $query = 'http://api.rottentomatoes.com/api/public/v1.0/movies.json?apikey=';
         $query .= $this->get_api_key() . '&q=' . urlencode($search);
        
         $HttpSocket = new HttpSocket();
         
-        $results = $HttpSocket->get($query);
-        $movies_arr = json_decode($results, true);
-        $movies = $movies_arr['movies']; 
-        
-        $this->set(compact('movies')); 
+        return $HttpSocket->get($query);
     }
 }

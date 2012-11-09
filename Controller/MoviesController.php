@@ -35,11 +35,12 @@ class MoviesController extends AppController
         }
         
         $movies_arr = json_decode($this->_get_movies($search), true);
-        $movies = $movies_arr['movies'];
+        $movies = $movies_arr['movies']; 
         
         $titles = array_map(function($movie){
-                return $movie['title'];
+                return array('id' => $movie['id'], 'value' => $movie['title']);
             }, $movies);
+
         echo json_encode($titles);
         exit;
     }

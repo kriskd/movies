@@ -8,19 +8,6 @@ class MoviesController extends AppController
     public function beforeFilter()
     {   
         parent::beforeFilter();
-        App::uses('HttpSocket', 'Network/Http');
-        
-        App::uses('PhpReader', 'Configure');
-        Configure::config('default', new PhpReader());
-        Configure::load('api', 'default');
-    }
-    
-    /**
-     * Get the api key from the config file and set member var
-     */
-    public function get_api_key()
-    {   
-        return $this->api_key = Configure::read('api_key');
     }
     
     public function index($search = null)
@@ -34,8 +21,7 @@ class MoviesController extends AppController
             exit;
         }
         
-        $movies_arr = json_decode($this->_get_movies($search), true);
-        $movies = $movies_arr['movies']; 
+        $movies = $this->_get_movies($search);
         
         $titles = array_map(function($movie){
                 return array('id' => $movie['id'], 'value' => $movie['title']);
@@ -55,19 +41,16 @@ class MoviesController extends AppController
             $this->redirect('/movies');
         }
         
-        $movies_arr = json_decode($this->_get_movies($search), true);
-        $movies = $movies_arr['movies']; 
+        $movies = $this->_get_movies($search);
         
         $this->set(compact('movies')); 
     }
     
     protected function _get_movies($search = null)
     {
-        $query = 'http://api.rottentomatoes.com/api/public/v1.0/movies.json?apikey=';
-        $query .= $this->get_api_key() . '&q=' . urlencode($search);
-       
-        $HttpSocket = new HttpSocket();
-        
-        return $HttpSocket->get($query);
+        $search = urlencode($search);
+        $movies_arr = $this->Movie->find('all', array('conditions' => array('q' => $search)));
+        $movies_arr = array_shift($movies_arr);
+        return $movies_arr['movies'];
     }
 }

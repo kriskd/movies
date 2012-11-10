@@ -12,7 +12,10 @@ class MoviesController extends AppController
     
     public function index($search = null)
     {
-
+        if($this->request->is('post')){
+            $data = $this->request->data;
+            $movie_id = $data['Movie']['id'];
+        }
     }
     
     public function titles($search = null)
@@ -41,7 +44,7 @@ class MoviesController extends AppController
             $this->redirect('/movies');
         }
         
-        $movies = $this->_get_movies($search);
+        $movies = $this->_get_movies($search); 
         
         $this->set(compact('movies')); 
     }
@@ -49,7 +52,7 @@ class MoviesController extends AppController
     protected function _get_movies($search = null)
     {
         $search = urlencode($search);
-        $movies_arr = $this->Movie->find('all', array('conditions' => array('q' => $search)));
+        $movies_arr = $this->Movie->find('all', array('conditions' => array('q' => $search))); //var_dump($movies_arr);
         $movies_arr = array_shift($movies_arr);
         return $movies_arr['movies'];
     }

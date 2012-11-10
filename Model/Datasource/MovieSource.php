@@ -5,6 +5,13 @@ class MovieSource extends DataSource
 {
     public $config = array('apiKey' => '');
     
+    protected $_schema = array(
+            'id' => array(
+                'type' => 'integer',
+                'null' => false,
+                'key' => 'primary',
+                'length' => 11));
+    
     public function __construct($config)
     {
         parent::__construct($config);
@@ -14,6 +21,11 @@ class MovieSource extends DataSource
     public function listSources($data = null)
     {
         return null;
+    }
+    
+    public function describe($model)
+    {
+        return $this->_schema;
     }
     
     public function read(Model $model, $queryData = array(), $recursive = null)

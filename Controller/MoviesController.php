@@ -3,18 +3,20 @@
 class MoviesController extends AppController
 {
     public $uses = array();
-    private $api_key;
     
     public function beforeFilter()
     {   
         parent::beforeFilter();
     }
     
-    public function index($search = null)
-    {
-        if($this->request->is('post')){
+    public function index()
+    {   
+        if($this->request->is('post') || $this->request->is('put')){ 
             $data = $this->request->data;
-            $movie_id = $data['Movie']['id'];
+            //Hard code an user_id for now
+            $data['User']['id'] = 1; 
+            unset($data['Movie']['title']); 
+            $this->Movie->User->save($data);
         }
     }
     
@@ -52,7 +54,7 @@ class MoviesController extends AppController
     protected function _get_movies($search = null)
     {
         $search = urlencode($search);
-        $movies_arr = $this->Movie->find('all', array('conditions' => array('q' => $search))); //var_dump($movies_arr);
+        $movies_arr = $this->Movie->find('all', array('conditions' => array('q' => $search))); 
         $movies_arr = array_shift($movies_arr);
         return $movies_arr['movies'];
     }

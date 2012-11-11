@@ -10,7 +10,22 @@ class MovieSource extends DataSource
                 'type' => 'integer',
                 'null' => false,
                 'key' => 'primary',
-                'length' => 11));
+                'length' => 11),
+            'title' => array(
+                'type' => 'string',
+                'null' => false,
+                'length' => 255),
+            'release_dates' => array(
+                'theater' => array(
+                    'type' => 'date',
+                    'null' => true
+                ),
+                'dvd' => array(
+                    'type' => 'date',
+                    'null' => true
+                )
+            )
+        );
     
     public function __construct($config)
     {
@@ -29,16 +44,25 @@ class MovieSource extends DataSource
     }
     
     public function read(Model $model, $queryData = array(), $recursive = null)
-    {
-        //API calls
-        //http://api.rottentomatoes.com/api/public/v1.0/movies.json?apikey=[your_api_key]
-        //http://api.rottentomatoes.com/api/public/v1.0/movies/770672122.json?apikey=[your_api_key]
-
-        $queryData['conditions']['apikey'] = $this->config['apiKey']; 
-        $json = $this->Http->get('http://api.rottentomatoes.com/api/public/v1.0/movies.json', $queryData['conditions']);
+    {          
+        $queryData['conditions']['apikey'] = $this->config['apiKey'];
         
-        $results = json_decode($json, true); 
-        if(!$results){
+        //Movie text search
+        if(isset($queryData['conditions']['q'])){
+            $json = $this->Http->get('http://api.rottentomatoes.com/api/public/v1.0/movies.json', $queryData['conditions']);
+            $results = json_decode($json, true); 
+        }
+        //Get the user's movies
+        elseif(isset($queryData['conditions']['id'])){ 
+            $ids = $queryData['conditions']['id'];
+            unset($queryData['conditions']['id']);
+            foreach($ids as $id){ 
+                $json = $this->Http->get('http://api.rottentomatoes.com/api/public/v1.0/movies/' . $id . '.json', $queryData['conditions']);
+                $results[] = json_decode($json, true); 
+            }
+        }
+        
+        if(!isset($results)){
             $error = json_last_error();
             throw new CakeException($error);
         }

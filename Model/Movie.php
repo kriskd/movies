@@ -2,6 +2,8 @@
 class Movie extends AppModel
 {
     public $useDbConfig = 'movie';
+        
+    //public $actsAs = array('Containable');
     
     public $hasAndBelongsToMany = array(
         'User' => array(

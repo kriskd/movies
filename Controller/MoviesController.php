@@ -10,15 +10,9 @@ class MoviesController extends AppController
     }
     
     public function index()
-    {
+    { 
         //Hard code an user_id for now
         $user_id = 1;
-        if($this->request->is('post') || $this->request->is('put')){ 
-            $request = $this->request->data;
-            $movie_id = $request['Movie']['id'];
-            $data['UserMovie'] = compact('movie_id', 'user_id');
-            $this->UserMovie->save($data);
-        }
         
         $users_movies = $this->UserMovie->find('all', array('conditions' => array('user_id' => $user_id),
                                                       'fields' => array('movie_id'),
@@ -27,6 +21,16 @@ class MoviesController extends AppController
         $movie_ids = array_map(function($item){
             return $item['UserMovie']['movie_id'];
         }, $users_movies);
+
+        if($this->request->is('post') || $this->request->is('put')){ 
+            $request = $this->request->data;
+            $movie_id = $request['Movie']['id'];
+            if(!in_array($movie_id, $movie_ids)){
+                $data['UserMovie'] = compact('movie_id', 'user_id');
+                $this->UserMovie->save($data);
+            }
+        }
+
         
         //Get the data for the user's maovies
         $movies_arr = $this->Movie->find('all', array('conditions' => array(

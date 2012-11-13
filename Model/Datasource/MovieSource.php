@@ -44,16 +44,16 @@ class MovieSource extends DataSource
     }
     
     public function read(Model $model, $queryData = array(), $recursive = null)
-    {          
+    {   
         $queryData['conditions']['apikey'] = $this->config['apiKey'];
         
         //Movie text search
-        if(isset($queryData['conditions']['q'])){
+        if(strcasecmp($model->findQueryType, 'search')==0){
             $json = $this->Http->get('http://api.rottentomatoes.com/api/public/v1.0/movies.json', $queryData['conditions']);
             $results = json_decode($json, true); 
         }
         //Get the user's movies
-        elseif(isset($queryData['conditions']['id'])){ 
+        else{ 
             $ids = $queryData['conditions']['id'];
             unset($queryData['conditions']['id']);
             foreach($ids as $id){ 

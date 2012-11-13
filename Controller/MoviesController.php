@@ -23,11 +23,16 @@ class MoviesController extends AppController
         $users_movies = $this->UserMovie->find('all', array('conditions' => array('user_id' => $user_id),
                                                       'fields' => array('movie_id'),
                                                       'recursive' => -1));
+        //Make an array of just the movie ids
         $movie_ids = array_map(function($item){
             return $item['UserMovie']['movie_id'];
         }, $users_movies);
         
-        $movies = $this->_get_movies($movie_ids); 
+        //Get the data for the user's maovies
+        $movies_arr = $this->Movie->find('all', array('conditions' => array(
+                                                    'id' => $movie_ids
+                                            )));
+        $movies = array_shift($movies_arr);
         $this->set(compact('movies'));
     }
     
@@ -42,8 +47,7 @@ class MoviesController extends AppController
             exit;
         }
         
-        $movies = $this->_get_movies($search);
-        $movies = $movies['movies'];
+        $movies = $this->_get_searched_movies($search);
         
         $titles = array_map(function($movie){
                 return array('id' => $movie['id'], 'value' => $movie['title']);
@@ -53,9 +57,8 @@ class MoviesController extends AppController
         exit;
     }
     
-    /**
-     * Returns an array of movies based on search term
-     * @param $search Search term for movie
+    /*
+     * Search for a movie with $_GET request
      */
     public function search($search = null)
     {   
@@ -63,26 +66,22 @@ class MoviesController extends AppController
             $this->redirect('/movies');
         }
         
-        $movies = $this->_get_movies($search);
-        $movies = $movies['movies'];
+        $movies = $this->_get_searched_movies($search);
         
         $this->set(compact('movies')); 
     }
     
-    protected function _get_movies($query = null)
+    /**
+     * Returns an array of movies based on search term
+     * @param $search Search term for movie
+     */
+    protected function _get_searched_movies($search = null)
     {
-        //Get the user's movies
-        if(is_array($query)){
-            $movies_arr = $this->Movie->find('all', array('conditions' => array(
-                                                                'id' => $query
-                                                        )));
-        }
         //Get movies based on search term
-        else{
-            $query = urlencode($query);
-            $movies_arr = $this->Movie->find('all', array('conditions' => array('q' => $query)));
-        }
+        $search = urlencode($search);
+        $movies_arr = $this->Movie->find('search', array('conditions' => array('q' => $search)));
         $movies_arr = array_shift($movies_arr); 
-        return $movies_arr;
+        $movies = $movies_arr['movies'];
+        return $movies;
     }
 }

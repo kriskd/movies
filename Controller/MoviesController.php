@@ -3,6 +3,8 @@
 class MoviesController extends AppController
 {
     public $uses = array('Movie', 'User', 'UserMovie');
+        
+    public $components = array('RequestHandler');
     
     public function beforeFilter()
     {   
@@ -10,7 +12,24 @@ class MoviesController extends AppController
     }
     
     public function index()
-    { 
+    {
+        //Handle ajax request for autocomplete
+        if($this->request->is('ajax')){
+            $query = $this->request->query;
+            $search = $query['term'];
+            if(!$search){ 
+                throw new NotFoundException('Search term required');
+            }
+            
+            $movies = $this->_get_searched_movies($search);
+            
+            $titles = array_map(function($movie){
+                    return array('id' => $movie['id'], 'value' => $movie['title']);
+                }, $movies);
+
+            $this->set(compact('titles'));
+        }
+        
         //Hard code an user_id for now
         $user_id = 1;
         
@@ -32,33 +51,12 @@ class MoviesController extends AppController
         }
 
         
-        //Get the data for the user's maovies
+        //Get the data for the user's movies
         $movies_arr = $this->Movie->find('all', array('conditions' => array(
                                                     'id' => $movie_ids
                                             )));
         $movies = array_shift($movies_arr);
         $this->set(compact('movies'));
-    }
-    
-    /*
-     * Server method to populate autocomplete based on movie search term.
-     * @param $search string Movie search term
-     * @return string json of movie matches
-     */
-    public function titles($search = null)
-    {
-        if(!$search){ 
-            exit;
-        }
-        
-        $movies = $this->_get_searched_movies($search);
-        
-        $titles = array_map(function($movie){
-                return array('id' => $movie['id'], 'value' => $movie['title']);
-            }, $movies);
-
-        echo json_encode($titles);
-        exit;
     }
     
     /*

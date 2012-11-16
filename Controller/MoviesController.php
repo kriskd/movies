@@ -4,15 +4,18 @@ class MoviesController extends AppController
 {
     public $uses = array('Movie', 'User', 'UserMovie');
         
-    public $components = array('RequestHandler');
-    
-    public function beforeFilter()
-    {   
-        parent::beforeFilter();
-    }
+    public $components = array('RequestHandler', 'GoogleAuth');
     
     public function index()
     {
+        //Check if the email is session is a valid email in the user table
+        //This is weird, google_email is staying in session no matter what I do.
+        $email = $this->Session->read('google_email'); 
+        $emails = $this->User->find('list', array('fields' => array('email')));
+        if(!in_array($email, $emails)){
+            $this->redirect($this->GoogleAuth->auth());
+        }
+        
         //Handle ajax request for autocomplete
         if($this->request->is('ajax')){
             $query = $this->request->query;
@@ -49,7 +52,6 @@ class MoviesController extends AppController
                 $this->UserMovie->save($data);
             }
         }
-
         
         //Get the data for the user's movies
         $movies_arr = $this->Movie->find('all', array('conditions' => array(
@@ -59,7 +61,7 @@ class MoviesController extends AppController
         $this->set(compact('movies'));
     }
     
-    /*
+    /**
      * Search for a movie with $_GET request
      */
     public function search($search = null)
@@ -85,5 +87,22 @@ class MoviesController extends AppController
         $movies_arr = array_shift($movies_arr); 
         $movies = $movies_arr['movies'];
         return $movies;
+    }
+    
+    public function oauth2callback()
+    {
+        $request = $this->request->query;
+        $email = $this->GoogleAuth->callback($request); 
+        $this->Session->write('google_email', $email);
+        $this->redirect('/movies');
+    } 
+    
+    /**
+     * This isn't destroying the session, I don't know why.
+     */
+    public function logout()
+    {
+        $this->Session->destroy();
+        $this->redirect('/movies');
     }
 }

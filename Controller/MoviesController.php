@@ -8,18 +8,23 @@ class MoviesController extends AppController
     
     public function index()
     {
-        //Check if the email is session is a valid email in the user table
-        //This is weird, google_email is staying in session no matter what I do.
-        $email = $this->Session->read('google_email'); 
-        $emails = $this->User->find('list', array('fields' => array('email')));
-        if(!in_array($email, $emails)){
-            $this->redirect($this->GoogleAuth->auth());
+        if($this->_is_auth()){
+            $this->redirect('/movies/my-movies');
+        }
+    }
+    
+    public function my_movies()
+    {
+        //Gets an user if we have one or attempt to authorize an user with Google.
+        $user = $this->_is_auth();
+        if(!$user){ 
+            $this->redirect($this->GoogleAuth->auth()); 
         }
         
         //Handle ajax request for autocomplete
         if($this->request->is('ajax')){
             $query = $this->request->query;
-            $search = $query['term'];
+            $search = $query['term']; 
             if(!$search){ 
                 throw new NotFoundException('Search term required');
             }
@@ -29,50 +34,67 @@ class MoviesController extends AppController
             $titles = array_map(function($movie){
                     return array('id' => $movie['id'], 'value' => $movie['title']);
                 }, $movies);
-
+            
             $this->set(compact('titles'));
         }
         
-        //Hard code an user_id for now
-        $user_id = 1;
-        
-        $users_movies = $this->UserMovie->find('all', array('conditions' => array('user_id' => $user_id),
-                                                      'fields' => array('movie_id'),
-                                                      'recursive' => -1));
-        //Make an array of just the movie ids
-        $movie_ids = array_map(function($item){
-            return $item['UserMovie']['movie_id'];
-        }, $users_movies);
+        $user_id = $user['User']['id'];
 
+        //Handle form submission to add a movie to the user
         if($this->request->is('post') || $this->request->is('put')){ 
-            $request = $this->request->data;
+            $request = $this->request->data; 
             $movie_id = $request['Movie']['id'];
-            if(!in_array($movie_id, $movie_ids)){
-                $data['UserMovie'] = compact('movie_id', 'user_id');
-                $this->UserMovie->save($data);
-            }
+            $data['UserMovie'] = compact('movie_id', 'user_id');
+            $this->UserMovie->save($data);
         }
         
-        //Get the data for the user's movies
-        $movies_arr = $this->Movie->find('all', array('conditions' => array(
-                                                    'id' => $movie_ids
-                                            )));
-        $movies = array_shift($movies_arr);
-        $this->set(compact('movies'));
+        $movie_ids = $this->UserMovie->userMovieIds($user_id); 
+        
+        if(!empty($movie_ids)){ 
+            //Get the data for the user's movies
+            $movies_arr = $this->Movie->find('all', array('conditions' => array(
+                                                        'id' => $movie_ids
+                                                )));
+            $movies = array_shift($movies_arr);
+            $this->set(compact('movies'));
+        }
+    }
+    
+    public function oauth2callback()
+    {   
+        $request = $this->request->query; 
+        $email = $this->GoogleAuth->callback($request); 
+        $this->Session->write('google_email', $email);
+        if($email){
+            $this->redirect('/movies/my-movies');
+        }
+        $this->redirect('/movies');
+    } 
+    
+    /**
+     * Check if we have a google email in session.
+     * Get the user based on email or create a new user with email.
+     */
+    protected function _is_auth()
+    {
+        $email = $this->Session->read('google_email'); 
+        if($email){
+            $user = $this->User->find('first', array('conditions' => array('User.email' => $email)));
+            if(!$user){
+                $user = $this->User->save(compact('email'));
+            }
+            return $user;
+        }
+        return false;
     }
     
     /**
-     * Search for a movie with $_GET request
+     * Destroy session.
      */
-    public function search($search = null)
-    {   
-        if(!$search){ 
-            $this->redirect('/movies');
-        }
-        
-        $movies = $this->_get_searched_movies($search);
-        
-        $this->set(compact('movies')); 
+    public function logout()
+    {
+        $this->Session->delete('google_email');
+        $this->redirect('/movies/index');
     }
     
     /**
@@ -89,20 +111,18 @@ class MoviesController extends AppController
         return $movies;
     }
     
-    public function oauth2callback()
-    {
-        $request = $this->request->query;
-        $email = $this->GoogleAuth->callback($request); 
-        $this->Session->write('google_email', $email);
-        $this->redirect('/movies');
-    } 
-    
+            
     /**
-     * This isn't destroying the session, I don't know why.
+     * Search for a movie with $_GET request
      */
-    public function logout()
-    {
-        $this->Session->destroy();
-        $this->redirect('/movies');
+    public function search($search = null)
+    {   
+        if(!$search){ 
+            $this->redirect('/movies/my-movies');
+        }
+        
+        $movies = $this->_get_searched_movies($search);
+        
+        $this->set(compact('movies')); 
     }
 }

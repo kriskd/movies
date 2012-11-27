@@ -1,4 +1,4 @@
-<table>
+<table class="table">
     <tr><th>Title</th><th>Theater</th><th>DVD</th></tr>
     <?php foreach($movies as $movie): ?>
         <tr><td><?php echo $movie['title']; ?></td>

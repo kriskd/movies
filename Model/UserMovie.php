@@ -21,7 +21,7 @@ class UserMovie extends AppModel
     /**
      * Make sure user doesn't already have that movie
      */
-    public function beforeSave(array $options = array())
+    public function beforeSave($options = array())
     {
         $data = $this->data;
         $user_id = $data['UserMovie']['user_id'];

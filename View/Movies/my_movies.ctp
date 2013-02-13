@@ -5,3 +5,4 @@
 <?php if(isset($movies)): ?>
     <?php echo $this->element('movie_table', $movies); ?>
 <?php endif; ?>
+<?php echo $this->Html->link('Logout', array('controller' => 'movies', 'action' => 'logout')); ?>

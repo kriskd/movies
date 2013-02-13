@@ -2,21 +2,30 @@
     margin-top: 10px; 
 }
 /* iPad mini 768 */
-@media (min-device-width: 768px) and (max-device-width: 979px) {
-    .container, label, input, button, select, textarea, .btn {
+@media (min-width: 768px) and (max-width: 979px) {
+    .container {
         font-size: 125%;
     }
+    label, input, button, select, textarea, .btn {
+        font-size: 115%;
+    }
     label {
-        line-height: 125%;
+        line-height: 115%;
     }
 }
 /* Android phone 480 */
-@media (max-device-width: 767px) {
-    .container, label, input, button, select, textarea, .btn {
+@media (max-width: 767px) {
+    .container {
         font-size: 200%;
     }
+    label, input, button, select, textarea, .btn {
+        font-size: 115%;
+    }
     label {
-        line-height: 200%;
+        line-height: 115%;
+    }
+    .btn {
+        padding: 8px 24px;
     }
     .table th, .table td {
         padding: 16px;

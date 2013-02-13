@@ -10,6 +10,7 @@
 		echo $this->Html->css('http://code.jquery.com/ui/1.9.1/themes/base/jquery-ui.css');
         echo $this->Html->css('bootstrap.min');
         echo $this->Html->css('bootstrap-responsive.min');
+        echo $this->Html->css('styles');
 
 		echo $this->Html->script('http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js');
 		echo $this->Html->script('http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js');

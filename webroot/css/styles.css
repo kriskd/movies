@@ -1,13 +1,22 @@
+.container {
+    margin-top: 10px; 
+}
 /* iPad mini 768 */
 @media (min-device-width: 768px) and (max-device-width: 979px) {
-    body, label, input, button, select, textarea {
+    .container, label, input, button, select, textarea, .btn {
         font-size: 125%;
+    }
+    label {
+        line-height: 125%;
     }
 }
 /* Android phone 480 */
 @media (max-device-width: 767px) {
-    body, label, input, button, select, textarea {
+    .container, label, input, button, select, textarea, .btn {
         font-size: 200%;
+    }
+    label {
+        line-height: 200%;
     }
     .table th, .table td {
         padding: 16px;

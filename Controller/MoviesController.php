@@ -9,7 +9,7 @@ class MoviesController extends AppController
     public function index()
     {
         if($this->_is_auth()){
-            $this->redirect('/movies/my-movies');
+            $this->redirect(array('controller' => 'movies', 'action' => 'my-movies'));
         }
     }
     
@@ -66,9 +66,9 @@ class MoviesController extends AppController
         $email = $this->GoogleAuth->callback($request); 
         $this->Session->write('google_email', $email);
         if($email){
-            $this->redirect('/movies/my-movies');
+            $this->redirect(array('controller' => 'movies', 'action' => 'my-movies'));
         }
-        $this->redirect('/movies');
+        $this->redirect(array('controller' => 'movies', 'action' => 'index'));
     } 
     
     /**
@@ -94,7 +94,7 @@ class MoviesController extends AppController
     public function logout()
     {
         $this->Session->delete('google_email');
-        $this->redirect('/movies/index');
+        $this->redirect(array('controller' => 'movies', 'action' => 'index'));
     }
     
     /**
@@ -118,7 +118,7 @@ class MoviesController extends AppController
     public function search($search = null)
     {   
         if(!$search){ 
-            $this->redirect('/movies/my-movies');
+            $this->redirect(array('controller' => 'movies', 'action' => 'my-movies'));
         }
         
         $movies = $this->_get_searched_movies($search);

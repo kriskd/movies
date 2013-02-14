@@ -11,4 +11,15 @@ $(document).ready(function(){
         });
     });
     
+    $('#MovieTitle').css('background', 'none')
+        .ajaxStart(function(){
+            $(this).css('background', 'url("/img/5-1.gif") no-repeat center right');  
+        })
+        .ajaxStop(function(){
+           $(this).css('background', 'none'); 
+        })
+        
+    $('.submit input').click(function(){
+        $('#MovieTitle').val('');    
+    });
 });

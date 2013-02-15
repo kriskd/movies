@@ -1,1 +1,2 @@
-<p><a href="/movies/my-movies">Authenicate</a> with your Gmail account to view your movies.</p>
+<p><?php echo $this->Html->link('Authenticate', array('controller' => 'movies', 'action' => 'my-movies')); ?>
+ with your Gmail account to view your movies.</p>

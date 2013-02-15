@@ -1,3 +1,7 @@
+<?php if(is_string($movies)): ?>
+    <p><?php echo $movies; ?></p>
+    <?php return; ?>
+<?php endif; ?>
 <?php echo $this->Form->create('Movie'); ?>
     <?php echo $this->Form->input('id'); ?>
     <?php echo $this->Form->input('title', array('label' => 'Search')); ?>

@@ -9,4 +9,6 @@
 <?php if(isset($movies)): ?>
     <?php echo $this->element('movie_table', $movies); ?>
 <?php endif; ?>
-<?php echo $this->Html->link('Logout', array('controller' => 'movies', 'action' => 'logout')); ?>
+<?php echo $this->Html->link('Logout', array('controller' => 'movies', 'action' => 'logout'),
+                             array('class' => 'btn btn-warning')); ?>
+<?php echo $this->Html->div('confirm', '', array('title' => 'Remove movie from list?')); ?>

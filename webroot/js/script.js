@@ -25,17 +25,35 @@ $(document).ready(function(){
         $('#MovieTitle').val('');    
     });
     
-    $('.icon-trash').click(function(){
+    $('.confirm').dialog({
+        resizable: false,
+        height: 140,
+        modal: true,
+        autoOpen: false
+    });
+    
+    $('.icon-trash').click(function(e){
         var id = $(this).attr('id');
         var user_movie = id.match(/\d+/);
         var that = this;
-        $.ajax({
-            type: 'POST',
-            url: '/movies/delete',
-            data: {id: user_movie},
-            success: function(){
-                $(that).parents('tr').remove();
+        $('.confirm').dialog({
+            buttons: {
+                'Remove movie': function(){
+                    $(this).dialog('close');
+                    $.ajax({
+                        type: 'POST',
+                        url: '/movies/delete',
+                        data: {id: user_movie},
+                        success: function(){
+                            $(that).parents('tr').remove();
+                        }
+                    });
+                },
+                'Cancel': function(){
+                    $(this).dialog('close');
+                }
             }
-        })  
+        });
+        $('.confirm').dialog('open');
     });
 });

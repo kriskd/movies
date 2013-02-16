@@ -9,6 +9,10 @@
     padding: 1em;
     text-align: center
 }
+
+tr td:first-child {
+    text-align: right; 
+}
 /* iPad mini 768 */
 @media (min-device-width: 768px) and (max-device-width: 979px) {
     .container {
@@ -29,7 +33,7 @@
     label, input, button, select, textarea, .btn {
         font-size: 115%;
     }
-    label {
+    label, p {
         line-height: 115%;
     }
     .btn {

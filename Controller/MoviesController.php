@@ -42,7 +42,9 @@ class MoviesController extends AppController
 
         //Handle form submission to add a movie to the user
         if($this->request->is('post') || $this->request->is('put')){ 
-            $request = $this->request->data; 
+            $request = $this->request->data;
+            //Unset this in order to prevent the movie id from appearing in the hidden field on the form
+            unset($this->request->data);
             $movie_id = $request['Movie']['id'];
             $data['UserMovie'] = compact('movie_id', 'user_id');
             $this->UserMovie->save($data);

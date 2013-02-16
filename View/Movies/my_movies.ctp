@@ -11,4 +11,4 @@
 <?php endif; ?>
 <?php echo $this->Html->link('Logout', array('controller' => 'movies', 'action' => 'logout'),
                              array('class' => 'btn btn-warning')); ?>
-<?php echo $this->Html->div('confirm', '', array('title' => 'Remove movie from list?')); ?>
+<?php echo $this->Html->div('confirm', '', array('title' => 'Confirm')); ?>

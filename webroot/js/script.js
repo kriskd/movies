@@ -33,6 +33,8 @@ $(document).ready(function(){
     });
     
     $('.icon-trash').click(function(e){
+        var title = $(this).parents('td').next().text();
+        $('.confirm').text('Remove ' + title + ' from list?');
         var id = $(this).attr('id');
         var user_movie = id.match(/\d+/);
         var that = this;

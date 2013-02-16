@@ -26,7 +26,7 @@ tr td:first-child {
     }
 }
 /* Android phone 480 */
-@media (max-width: 767px) {
+@media (max-device-width: 767px) {
     .container, .ui-dialog {
         font-size: 200%;
     }

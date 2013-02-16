@@ -26,20 +26,20 @@ tr td:first-child {
     }
 }
 /* Android phone 480 */
-@media (max-device-width: 767px) {
+@media (max-width: 767px) {
     .container, .ui-dialog {
         font-size: 200%;
     }
     label, input, button, select, textarea, .btn {
         font-size: 115%;
     }
-    label, p, ui-dialog p {
+    label, p, .ui-dialog, .table td {
         line-height: 115%;
     }
     .btn {
         padding: 8px 24px;
     }
-    .table th, .table td {
+    .table th, .table td, .ui-widget button {
         padding: 16px;
     }
 }

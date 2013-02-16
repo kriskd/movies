@@ -56,16 +56,16 @@ class MovieSource extends DataSource
         else{ 
             $ids = $queryData['conditions']['id'];
             unset($queryData['conditions']['id']);
-            foreach($ids as $id){ 
+            foreach($ids as $key => $id){ 
                 $json = $this->Http->get('http://api.rottentomatoes.com/api/public/v1.0/movies/' . $id . '.json', $queryData['conditions']);
-                $results[] = json_decode($json, true); 
+                $results[$key] = json_decode($json, true); 
             }
             $current = current($results);
             if(isset($current['error'])){ 
                 return array($model->alias => $current['error']);
             }
             //This needs to be an option in the find method rather than hard coded here
-            usort($results, function($a, $b){return ($a['title'] < $b['title']) ? -1 : 1;});
+            uasort($results, function($a, $b){return ($a['title'] < $b['title']) ? -1 : 1;});
         }
         
         if(!isset($results)){

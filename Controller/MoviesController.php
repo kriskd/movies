@@ -48,15 +48,30 @@ class MoviesController extends AppController
             $this->UserMovie->save($data);
         }
         
-        $movie_ids = $this->UserMovie->userMovieIds($user_id); 
+        //$movie_ids = $this->UserMovie->userMovieIds($user_id); 
+        $user_movies = $this->UserMovie->find('list', array('conditions' =>
+                                                           array('user_id' => $user_id),
+                                                           'recursive' => -1,
+                                                           'fields' => array('id', 'movie_id'))
+                                                    );
         
-        if(!empty($movie_ids)){ 
+        if(!empty($user_movies)){ 
             //Get the data for the user's movies
             $movies_arr = $this->Movie->find('all', array('conditions' => array(
-                                                        'id' => $movie_ids
+                                                        'id' => $user_movies
                                                 )));
             $movies = array_shift($movies_arr);
             $this->set(compact('movies'));
+        }
+    }
+    
+    public function delete()
+    {
+        if($this->request->is('ajax')){
+            $data = $this->request->data;
+            $id = current($data['id']);
+            $this->UserMovie->delete($id, false);
+            $this->autoRender = false;
         }
     }
     

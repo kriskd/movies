@@ -24,4 +24,18 @@ $(document).ready(function(){
     $('.submit input').click(function(){
         $('#MovieTitle').val('');    
     });
+    
+    $('.icon-trash').click(function(){
+        var id = $(this).attr('id');
+        var user_movie = id.match(/\d+/);
+        var that = this;
+        $.ajax({
+            type: 'POST',
+            url: '/movies/delete',
+            data: {id: user_movie},
+            success: function(){
+                $(that).parents('tr').remove();
+            }
+        })  
+    });
 });

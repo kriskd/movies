@@ -1,6 +1,14 @@
 .container {
     margin-top: 10px; 
 }
+
+.auth {
+    border: 1px solid gray;
+    width: 50%;
+    margin: auto;
+    padding: 1em;
+    text-align: center
+}
 /* iPad mini 768 */
 @media (min-device-width: 768px) and (max-device-width: 979px) {
     .container {

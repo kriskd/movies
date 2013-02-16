@@ -15,7 +15,7 @@ tr td:first-child {
 }
 /* iPad mini 768 */
 @media (min-device-width: 768px) and (max-device-width: 979px) {
-    .container {
+    .container, .ui-dialog {
         font-size: 125%;
     }
     label, input, button, select, textarea, .btn {
@@ -27,13 +27,13 @@ tr td:first-child {
 }
 /* Android phone 480 */
 @media (max-device-width: 767px) {
-    .container {
+    .container, .ui-dialog {
         font-size: 200%;
     }
     label, input, button, select, textarea, .btn {
         font-size: 115%;
     }
-    label, p {
+    label, p, ui-dialog p {
         line-height: 115%;
     }
     .btn {

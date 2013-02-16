@@ -21,8 +21,11 @@ $(document).ready(function(){
            $('input[type=submit]').removeAttr('disabled');
         })
         
-    $('.submit input').click(function(){
-        $('#MovieTitle').val('');    
+    $('.submit input').click(function(e){
+        $('#MovieTitle').val('');
+        if($('#MovieId').val() == ''){
+            e.preventDefault();
+        }    
     });
     
     $('.confirm').dialog({

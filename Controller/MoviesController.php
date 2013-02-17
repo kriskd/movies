@@ -17,8 +17,8 @@ class MoviesController extends AppController
     public function my_movies()
     {
         //Gets an user if we have one or attempt to authorize an user with Google.
-        $user = $this->_is_auth();
-        if(!$user){ 
+        $user = $this->_is_auth(); 
+        if(empty($user)){ 
             $this->redirect($this->GoogleAuth->auth()); 
         }
         
@@ -51,7 +51,6 @@ class MoviesController extends AppController
             $this->UserMovie->save($data);
         }
         
-        //$movie_ids = $this->UserMovie->userMovieIds($user_id); 
         $user_movies = $this->UserMovie->find('list', array('conditions' =>
                                                            array('user_id' => $user_id),
                                                            'recursive' => -1,
@@ -72,10 +71,14 @@ class MoviesController extends AppController
     
     public function delete()
     {
-        if($this->request->is('ajax')){
+        $referer = $this->referer(null, true);
+        $route = Router::url(array('controller' => 'movies', 'action' => 'my-movies')); 
+        if($this->request->is('ajax') && strcasecmp($referer, $route)==0){
+            $user = $this->Session->read('user'); 
+            $user_id = $user['User']['id'];
             $data = $this->request->data;
             $id = current($data['id']);
-            $this->UserMovie->delete($id, false);
+            $this->UserMovie->deleteAll(array('UserMovie.id' => $id, 'UserMovie.user_id' => $user_id), false);
             $this->autoRender = false;
         }
     }
@@ -83,28 +86,25 @@ class MoviesController extends AppController
     public function oauth2callback()
     {   
         $request = $this->request->query; 
-        $email = $this->GoogleAuth->callback($request); 
-        $this->Session->write('google_email', $email);
-        if($email){
+        $email = $this->GoogleAuth->callback($request);
+        $user = $this->User->find('first', array('conditions' => compact('email')));
+        $this->Session->write('user', $user);
+        if(!empty($user)){
             $this->redirect(array('controller' => 'movies', 'action' => 'my-movies'));
         }
         $this->redirect(array('controller' => 'movies', 'action' => 'index'));
     } 
     
     /**
-     * Check if we have a google email in session.
-     * Get the user based on email or create a new user with email.
+     * Check if we have a user in session and return.
      */
     protected function _is_auth()
     {
-        $email = $this->Session->read('google_email'); 
-        if($email){
-            $user = $this->User->find('first', array('conditions' => array('User.email' => $email)));
-            if(!$user){
-                $user = $this->User->save(compact('email'));
-            }
+        $user = $this->Session->read('user');
+        if(!empty($user)){
             return $user;
         }
+
         return false;
     }
     
@@ -113,7 +113,7 @@ class MoviesController extends AppController
      */
     public function logout()
     {
-        $this->Session->delete('google_email');
+        $this->Session->delete('user');
         $this->redirect(array('controller' => 'movies', 'action' => 'index'));
     }
     

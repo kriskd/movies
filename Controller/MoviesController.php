@@ -11,6 +11,7 @@ class MoviesController extends AppController
         if($this->_is_auth()){
             $this->redirect(array('controller' => 'movies', 'action' => 'my-movies'));
         }
+        $this->set('title_for_layout', 'Movies : Authenticate');
     }
     
     public function my_movies()
@@ -65,6 +66,8 @@ class MoviesController extends AppController
             $movies = array_shift($movies_arr);
             $this->set(compact('movies'));
         }
+        
+        $this->set('title_for_layout', 'Movies : List');
     }
     
     public function delete()
@@ -128,11 +131,11 @@ class MoviesController extends AppController
         return $movies;
     }
     
-            
     /**
      * Search for a movie with $_GET request
+     * Disable this for now
      */
-    public function search($search = null)
+    /*public function search($search = null)
     {   
         if(!$search){ 
             $this->redirect(array('controller' => 'movies', 'action' => 'my-movies'));
@@ -141,5 +144,5 @@ class MoviesController extends AppController
         $movies = $this->_get_searched_movies($search);
         
         $this->set(compact('movies')); 
-    }
+    }*/
 }

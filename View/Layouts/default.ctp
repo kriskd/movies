@@ -4,7 +4,7 @@
     <head>
     <title><?php echo $title_for_layout; ?></title>
     <?php
-		echo $this->Html->meta('icon');
+		echo $this->Html->meta('icon', '/img/favicon.ico');
         echo $this->Html->meta('viewport', '"width=device-width, initial-scale=1.0');
 
 		echo $this->Html->css('http://code.jquery.com/ui/1.9.1/themes/base/jquery-ui.css');
